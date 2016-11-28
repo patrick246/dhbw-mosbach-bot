@@ -1,0 +1,19 @@
+{
+  "name": "dhbw-mosbach-bot",
+  "version": "1.0.0",
+  "description": "/survival/api.php?action={action}",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrick246/dhbw-mosbach-bot.git"
+  },
+  "author": "patrick246, LeoDJ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/patrick246/dhbw-mosbach-bot/issues"
+  },
+  "homepage": "https://github.com/patrick246/dhbw-mosbach-bot#readme"
+}

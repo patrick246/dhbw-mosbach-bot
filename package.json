@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/patrick246/dhbw-mosbach-bot/issues"
   },
-  "homepage": "https://github.com/patrick246/dhbw-mosbach-bot#readme"
+  "homepage": "https://github.com/patrick246/dhbw-mosbach-bot#readme",
+  "dependencies": {
+    "request": "^2.79.0"
+  }
 }

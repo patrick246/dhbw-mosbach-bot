@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/patrick246/dhbw-mosbach-bot#readme",
   "dependencies": {
+    "request": "^2.79.0",
     "telegraf": "^3.5.2"
   }
 }

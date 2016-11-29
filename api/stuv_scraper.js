@@ -22,14 +22,23 @@ function filterDate(date) {
     };
 }
 
-function renderStuvPlans(plans) {
+function renderStuvPlansConsole(plans) {
     plans.forEach(function(element) {
-        console.log("--------------------------------------------------");
+        console.log("-------------------------------");
         console.log(element.ID, element.name, "\n" + element.start_time, element.start_date, "\n" + (element.lecturer === "" ? "-" : element.lecturer), element.location);
     });
-    console.log("--------------------------------------------------");
+    console.log("-------------------------------");
 }
 
-getStuvPlans("inf16a").then(filterDate(new Date())).then(renderStuvPlans).catch(function(err){
-    console.log(err);
-});
+function renderStuvPlansMessage(plans) {
+    var messageText = "";
+    plans.forEach(function(element) {
+        messageText += "-------------------------------\n";
+        messageText += element.name + "\n" + element.start_time + " - " + element.end_time + "\n";
+        messageText += (element.lecturer === "" ? "-" : element.lecturer) + " " + element.location + "\n";
+    });
+    messageText += "-------------------------------\n";
+    return messageText;
+}
+
+getStuvPlans("inf16a").then(filterDate(new Date())).then(renderStuvPlansMessage).then(console.log);

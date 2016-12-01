@@ -13,9 +13,20 @@ function getStuvPlans(course) {
     });
 }
 
+function toDateArray(date) {
+    return [date.getDate(), date.getMonth() + 1, date.getFullYear()];
+}
+
+function toDateString(date) {
+    var dateArr = toDateArray(date)
+    dateArr[0] = ("0"+dateArr[0]).slice(-2); //add leading zero
+    dateArr[1] = ("0"+dateArr[1]).slice(-2);
+    return dateArr.join('.');
+}
+
 function filterDate(date) {
     return function (plans) {
-        var dateStr = date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear();
+        var dateStr = toDateString(date);
         return plans.filter(function (elem) {
             return elem.start_date === dateStr;
         });
@@ -31,14 +42,14 @@ function renderStuvPlansConsole(plans) {
 }
 
 function renderStuvPlansMessage(date, plans) {
-    var d = [date.getDate(), date.getMonth() + 1, date.getFullYear()];
+    var d = toDateArray(date);
     var messageText = "Plan für den " + d.join('.') + '\n';
     plans.forEach(function (element) {
-        messageText += "----------------------------\n";
+        messageText += "------------------------\n";
         messageText += element.name + "\n🕒 " + element.start_time + " - " + element.end_time + "\n";
         messageText += "🎓 " + (element.lecturer === "" ? "-" : element.lecturer) + " | 🚪 " + element.location + "\n";
     });
-    messageText += "----------------------------\n";
+    messageText += "------------------------\n";
     return messageText;
 }
 
@@ -47,8 +58,11 @@ function getPlan(course, date) {
         .then(filterDate(date))
         .then(renderStuvPlansMessage.bind(null, date)); //inject date into parameters for displaying in message
 }
-
-//getPlan("INF16A", new Date()).then(console.log); //debug
-
+/*
+var day = new Date();
+day.setDate(9); //if it's after 18:00, get next day
+day.setMonth(11);
+getPlan("INF16A", day).then(console.log); //debug
+*/
 
 module.exports = {getPlan};

@@ -34,10 +34,17 @@ var mockCourses = ["BK13A", "BK13B", "BK13C", "BK14A", "BK14B", "BK14C", "BK15A"
  - selectCourse
  */
 
+function userString(msg) {
+    return JSON.stringify(msg.from.id == msg.chat.id ? msg.from : {from: msg.from, chat: msg.chat});
+}
 
 function logMsg(msg) {
-    var from = JSON.stringify(msg.from.id == msg.chat.id ? msg.from : {from: msg.from, chat: msg.chat});
+    var from = userString(msg);
     console.log(msg.message.text, from)
+}
+
+function logOutMsg(msg, text) {
+    console.log('>', {id: msg.chat.id}, text);
 }
 
 function getCourseTypes() {
@@ -55,6 +62,7 @@ function getCoursesByType(type) {
 }
 
 function courseTypeSelection(msg) { //display the course type selection
+    logMsg(msg);
     var inlineData = [];
     var rowCnt = 4;
     var tmp = [];
@@ -101,26 +109,34 @@ function publish(data) { //expects data in form of {'courseName': "stringToPubli
 
 bot.command('start', (msg) => {
     //console.log('start', msg.from, msg.chat);
-    logMsg(msg);
-    dataService.registerUser(msg.chat.id);
-    msg.reply('Willkommen! Ich bin der DHBW Mosbach Vorlesungsplan-Bot. Ich sende dir jeden Morgen den aktuellen Vorlesungsplan zu.');
+    //logMsg(msg); //commented out because will already get logged in courseTypeSelection
+    dataService.registerUser(msg);
+    var m = 'Willkommen! Ich bin der DHBW Mosbach Vorlesungsplan-Bot. Ich sende dir jeden Morgen den aktuellen Vorlesungsplan zu.';
+    msg.reply(m);
+    logOutMsg(msg, m);
     courseTypeSelection(msg);
 });
 
 bot.command('stop', (msg) => {
-    console.log(msg.text, msg.from, msg.chat);
+    logMsg(msg);
     dataService.setEnabled(msg.chat.id, false);
+    var m = 'Ich sende nun nicht mehr jeden Tag den neuen Vorlesungsplan';
+    logOutMsg(msg, m);
+    msg.reply(m);
 });
 
-bot.command('changeClass', courseTypeSelection); //call method with parameter msg
+bot.command('changeclass', courseTypeSelection); //call method with parameter msg
 
-bot.command('getPlan', msg => {
+bot.command('getplan', msg => {
+    logMsg(msg);
     var course = dataService.getCourse(msg.chat.id);
     var day = new Date(); //ToDo: maybe custom date handling (let user pick date from inline calendar)
     day.setHours(day.getHours() + 6); //if it's after 18:00, get next day
     api.getPlan(course, day)
         .then((data) => {
-            msg.replyWithHTML('<pre>' + data + '</pre>');
+            var m = '<pre>' + data + '</pre>';
+            logOutMsg(msg, m);
+            msg.replyWithHTML(m);
         });
 });
 
@@ -129,11 +145,7 @@ bot.action(/.+/, (msg) => {
     var uid = msg.chat.id;
     var curState = dataService.getMetaData(uid, "state");
 
-    if (curState == undefined) {
-        console.log("State for user", uid, "was undefined");
-        return;
-    }
-    else if (curState == "selectCourseType") {
+    if (curState == "selectCourseType") {
         courseSelection(msg, answer);
     }
     else if (curState == "selectCourse") {
@@ -141,10 +153,12 @@ bot.action(/.+/, (msg) => {
         dataService.setCourse(uid, answer);
         dataService.setMetaData(uid, "state", undefined);
     }
+    console.log('[' + answer + ']', curState ? "" : "IGNORED", userString(msg));
 });
 
 
 bot.startPolling();
+
 
 module.exports = {
     publish

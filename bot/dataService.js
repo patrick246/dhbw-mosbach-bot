@@ -17,8 +17,9 @@ function saveUsers() {
     })
 }
 
-function registerUser(uid) {
-    var usr = {enabled: true, data: {}};
+function registerUser(msg) {
+    var uid = msg.chat.id;
+    var usr = {enabled: true, data: {from: msg.from, chat: msg.chat}};
     users[uid] = usr;
     saveUsers();
 }

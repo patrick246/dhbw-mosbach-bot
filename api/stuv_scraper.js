@@ -8,7 +8,16 @@ function getStuvPlans(course) {
                 console.log(error);
                 reject(error);
             }
-            resolve(JSON.parse(body));
+            try {
+                var result = JSON.parse(body);
+                resolve(result);
+            }
+            catch(e) {
+                console.log(body);
+                console.error(e);
+                reject(e);
+            }
+
         });
     });
 }

@@ -18,16 +18,15 @@ dataService.loadUsers();
 //TODO: message logging
 //TODO: get courses from api
 
-
+/*
  setTimeout(()=>{ //dataService debug code
  console.log(dataService.getCoursesToFetch());
  console.log(dataService.getSubscribersOfCourse("INF16A"));
- }, 100);
- 
-
-//const mockCourses = ["BK13A", "BK13B", "BK13C", "BK14A", "BK14B", "BK14C", "BK15A", "BK15B", "BK16A", "BK16B", "BSTUF13", "BSTUF14", "BSTUF15", "BSTUF16", "BW-FS13A", "BW-FS13B", "BW-FS14", "BW-FS15", "BW-FS16", "BW-PM13A", "BW-PM13B", "BW-PM13C", "BW-PM14A", "BW-PM14B", "BW-PM14C", "BW-PM14C1", "BW-PM14C2", "BW-PM15A", "BW-PM15B", "BW-PM15C", "BW-PM15D", "BW-PM16A", "BW-PM16B", "BW-PM16C", "BW-PM16D", "ET13A", "ET13B", "ET14A", "ET14B", "ET15A", "ET15B", "ET16A", "ET16B", "HD-BS13", "HD13A", "HD13B", "HD13C", "HD13E", "HD13F", "HD13G", "HD14A", "HD14B", "HD14C", "HD14D", "HD14E", "HD14F", "HD15A", "HD15B", "HD15C", "HD15D", "HD15E", "HD15F", "HD16A", "HD16B", "HD16C", "HD16D", "HD16E", "HD16F", "HH13", "HH14", "HH15", "HH16", "HT13", "HT14", "HT15", "HT16", "IN13A", "IN13B", "IN13C", "IN14A", "IN14B", "IN14C", "IN15A", "IN15B", "IN15C", "IN16A", "IN16B", "IN16C", "INF13A", "INF13B", "INF14A", "INF14B", "INF15A", "INF15B", "INF16A", "INF16B", "IPB13", "IPB14", "IPB15", "IPB16", "IPB17S", "IPE13", "MB-KE13A", "MB-KE13B", "MB-KE13C", "MB-KE13D", "MB-KE14A", "MB-KE14B", "MB-KE14C", "MB-KE14D", "MB-KE15A", "MB-KE15B", "MB-KE15C", "MB-KE15D", "MB-KE16A", "MB-KE16B", "MB-KE16C", "MB-KE16D", "MB-KT13", "MB-KT14", "MB-KT15", "MB-KT16", "MB-VE13", "MB-VE14", "MB-VE15", "MB-VE16", "MB-VT13", "MB-VT14", "MB-VT15", "MB-VT16", "MT-EM13", "MT-EM14", "MT-EM15", "MT13A", "MT13B", "MT14A", "MT14B", "MT15A", "MT15B", "MT16A", "MT16B", "ON13A", "ON13B", "ON14A", "ON14B", "ON15A", "ON15B", "ON16A", "ON16B", "WI13R", "WI13S", "WI13T", "WI13U", "WI14R", "WI14S", "WI14T", "WI14U", "WI15R", "WI15S", "WI15T", "WI15U", "WI16A", "WI16B", "WI16C", "WIW-IPL13", "WIW-IPL14", "WIW-IPL15", "WIW-IPL16", "WIW-ITP13", "WIW-ITP14", "WIW-ITP15", "WIW-ITP16", "WIW-ITV13", "WIW-ITV14", "WIW-ITV15", "WIW-ITV16"];
+ }, 100);*/
 
 
+
+let mockCourses = [];
 /*
  available states:
  - selectCourseType
@@ -35,7 +34,10 @@ dataService.loadUsers();
  */
 
 function userString(msg) {
-    return JSON.stringify(msg.from.id == msg.chat.id ? msg.from : {from: msg.from, chat: msg.chat});
+    return JSON.stringify(msg.from.id == msg.chat.id ? msg.from : {
+        from: msg.from,
+        chat: msg.chat
+    });
 }
 
 function logMsg(msg) {
@@ -44,7 +46,9 @@ function logMsg(msg) {
 }
 
 function logOutMsg(msg, text) {
-    console.log('>', {id: msg.chat.id}, text);
+    console.log('>', {
+        id: msg.chat.id
+    }, text);
 }
 
 function getCourseTypes() {
@@ -65,7 +69,7 @@ function courseTypeSelection(msg) { //display the course type selection
     logMsg(msg);
     const inlineData = [];
     const rowCnt = 4;
-    const tmp = [];
+    let tmp = [];
     getCourseTypes().forEach((val, i) => {
         if (i % rowCnt == 0) {
             tmp = [];
@@ -84,7 +88,7 @@ function courseSelection(msg, type) { //display the course selection (after sele
     const uid = msg.chat.id;
     const inlineData = [];
     const rowCnt = 3;
-    const tmp = [];
+    let tmp = [];
     const courses = getCoursesByType(type);
     courses.forEach((val, i) => {
         if (i % rowCnt == 0) {
@@ -147,19 +151,20 @@ bot.action(/.+/, (msg) => {
 
     if (curState == "selectCourseType") {
         courseSelection(msg, answer);
-    }
-    else if (curState == "selectCourse") {
-        msg.replyWithHTML("Danke! Ich werde nun den Kurs <b>" + answer + "</b> benutzen.")
+    } else if (curState == "selectCourse") {
+        msg.replyWithHTML("Danke! Ich werde nun den Kurs <b>" + answer + "</b> benutzen.");
+    
         dataService.setCourse(uid, answer);
         dataService.setMetaData(uid, "state", undefined);
     }
+    msg.deleteMessage();
     console.log('[' + answer + ']', curState ? "" : "IGNORED", userString(msg));
 });
 
+api.getCourses().then((courses) => {
+    mockCourses = courses;
+    bot.startPolling();
+});
 
-bot.startPolling();
 
-
-module.exports = {
-    publish
-}
+module.exports = {}

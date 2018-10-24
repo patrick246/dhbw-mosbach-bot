@@ -1,25 +1,30 @@
-var request = require("request");
-
-
-function getStuvPlans(course) {
+const request = require("request");
+const handleRequest = function (url) {
     return new Promise(function (resolve, reject) {
-        request("http://stuv-mosbach.de/survival/api.php?action=getLectures&course=" + course, function (error, response, body) {
+        request(url, function (error, response, body) {
             if (error) {
                 console.log(error);
                 reject(error);
             }
             try {
-                var result = JSON.parse(body);
+                const result = JSON.parse(body);
                 resolve(result);
-            }
-            catch(e) {
+            } catch (e) {
                 console.log(body);
                 console.error(e);
                 reject(e);
             }
-
         });
     });
+}
+
+
+function getCourses() {
+    return handleRequest("http://stuv-mosbach.de/survival/api.php?action=getCourses");
+}
+
+function getStuvPlans(course) {
+    return handleRequest("http://stuv-mosbach.de/survival/api.php?action=getLectures&course=" + course);
 }
 
 function toDateArray(date) {
@@ -28,14 +33,14 @@ function toDateArray(date) {
 
 function toDateString(date) {
     var dateArr = toDateArray(date)
-    dateArr[0] = ("0"+dateArr[0]).slice(-2); //add leading zero
-    dateArr[1] = ("0"+dateArr[1]).slice(-2);
+    dateArr[0] = ("0" + dateArr[0]).slice(-2); //add leading zero
+    dateArr[1] = ("0" + dateArr[1]).slice(-2);
     return dateArr.join('.');
 }
 
 function filterDate(date) {
     return function (plans) {
-        var dateStr = toDateString(date);
+        const dateStr = toDateString(date);
         return plans.filter(function (elem) {
             return elem.start_date === dateStr;
         });
@@ -51,8 +56,8 @@ function renderStuvPlansConsole(plans) {
 }
 
 function renderStuvPlansMessage(date, plans) {
-    var d = toDateArray(date);
-    var messageText = "Plan für den " + d.join('.') + '\n';
+    const d = toDateArray(date);
+    let messageText = "Plan für den " + d.join('.') + '\n';
     plans.forEach(function (element) {
         messageText += "------------------------\n";
         messageText += element.name + "\n🕒 " + element.start_time + " - " + element.end_time + "\n";
@@ -69,9 +74,12 @@ function getPlan(course, date) {
 }
 /*
 var day = new Date();
-day.setDate(9); //if it's after 18:00, get next day
-day.setMonth(11);
+day.setDate(25); //if it's after 18:00, get next day
+day.setMonth(9);
 getPlan("INF16A", day).then(console.log); //debug
+getCourses().then(console.log);
 */
-
-module.exports = {getPlan};
+module.exports = {
+    getPlan,
+    getCourses
+};

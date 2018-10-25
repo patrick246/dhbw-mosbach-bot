@@ -157,7 +157,6 @@ bot.action(/.+/, (msg) => {
         dataService.setCourse(uid, answer);
         dataService.setMetaData(uid, "state", undefined);
     }
-    msg.deleteMessage();
     console.log('[' + answer + ']', curState ? "" : "IGNORED", userString(msg));
 });
 
